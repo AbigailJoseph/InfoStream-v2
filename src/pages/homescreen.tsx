@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../style.css'
-import { addDoc, collection , arrayUnion, updateDoc, doc } from 'firebase/firestore';
+import { addDoc, collection , arrayUnion, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../server/firebase-config';
 import {auth} from '../../server/firebase-config';
 import 'bootstrap/dist/css/bootstrap-grid.min.css';
@@ -9,38 +9,69 @@ import Stack from 'react-bootstrap/Stack';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import CONFIG from "../../server/consts";
 
 
 const HomeScreen: React.FC = () => {
-    const [topHeadlines, setTopHeadlines] = useState<any[]>([]);
+    const [topArticles, setTopArticles] = useState<any[]>([]);
+    const [topArticleIDs, setTopArticleIDs] = useState<any[]>([]);
     const [savedArticles, setSavedArticles] = useState<any[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   
-    
+    useEffect(() => {
+      const fetchTopArticles = async () => {
+        try{
+          const articleIDRef = doc(db, `articleIDs`, CONFIG.ARTICLE_ID)
+          const snapshot = await getDoc(articleIDRef);
 
-    // useEffect(() => {
-    //   const apiKey = 'fc86f65ced7b44e9b86c02e971b9bdfc'; 
-    //   fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`)
-    //     .then(response => response.json())
-    //     .then(data => {
-    //       setTopHeadlines(data.articles);
-    //     })
-    //     .catch(error => {
-    //       console.log('Error fetching top headlines:', error);
-    //     });
-      
-    //     const unsubscribe = auth.onAuthStateChanged((user) => {
-    //       if (user) {
-    //           setIsLoggedIn(true);
-    //       } else {
-    //           setIsLoggedIn(false);
-    //       }
-    //   });
+          if (snapshot.exists()) {
+            const articleIDs = snapshot.data();
+            const topArticlesArray = articleIDs.top || [];
+            setTopArticleIDs(topArticlesArray);
+          } else {
+            console.log('Document not found.');
+          }
 
-    //   return () => {
-    //       unsubscribe();
-    //   };
-    // }, []);
+        }
+        catch(error){
+          console.error('Error fetching articleIDs document:', error);
+        }
+      };
+
+      fetchTopArticles();
+
+    }, []);
+
+    useEffect(() => {
+      const loadBusinessArticles = async () => {
+        try {
+          const mapID = topArticleIDs.map(async (articleID) => {
+            const articleRef = doc(db, 'articles', articleID);
+            const article = await getDoc(articleRef);
+  
+            if (article.exists()) {
+              return article.data();
+            } else {
+              console.log(`Article with ID ${articleID} not found.`);
+              return null;
+            }
+          });
+  
+          Promise.all(mapID)
+            .then((articlesData) => {
+              setTopArticles(articlesData.filter((article) => article !== null));
+            })
+            .catch((error) => {
+              console.error('Error retrieving saved articles:', error);
+            });
+        } catch (error) {
+          console.error('Error loading saved articles:', error);
+        }
+      };
+
+      loadBusinessArticles();
+
+    }, []);
   
     const currentUser = auth.currentUser;
     const currentUserId = currentUser?.uid;
@@ -80,7 +111,7 @@ const HomeScreen: React.FC = () => {
     return (
       <div className = "backGround">
         <><h2 className="mx-4">Top News:</h2><Stack gap={3}>
-        {topHeadlines.map((article: any, index: number) => (
+        {topArticles.map((article: any, index: number) => (
           <Card key = {index} className="mx-4">
             <Card.Body>
 
