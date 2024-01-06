@@ -19,27 +19,58 @@ const Technology: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
     useEffect(() => {
-        const apiKey = 'fc86f65ced7b44e9b86c02e971b9bdfc'; 
+      const fetchTechnologyArticles = async () => {
+        try{
+          const articleIDRef = doc(db, `articleIDs`, CONFIG.ARTICLE_ID)
+          const snapshot = await getDoc(articleIDRef);
 
-        fetch(`https://newsapi.org/v2/top-headlines?category=technology&country=us&apiKey=${apiKey}`)
-            .then(response => response.json())
-            .then(data => {
-                setTechnologyArticles(data.articles);
-            })
-            .catch(error => {
-                console.log('Error fetching technology articles:', error);
-            });
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-          if (user) {
-              setIsLoggedIn(true);
+          if (snapshot.exists()) {
+            const articleIDs = snapshot.data();
+            const technologyArticlesArray = articleIDs.technology || [];
+            setTechnologyArticleIDs(technologyArticlesArray);
           } else {
-              setIsLoggedIn(false);
+            console.log('Document not found.');
           }
-        });
 
-        return () => {
-          unsubscribe();
-        };
+        }
+        catch(error){
+          console.error('Error fetching articleIDs document:', error);
+        }
+      };
+
+      fetchTechnologyArticles();
+
+    }, []);
+
+    useEffect(() => {
+      const loadTechnologyArticles = async () => {
+        try {
+          const mapID = technologyArticleIDs.map(async (articleID) => {
+            const articleRef = doc(db, 'technologyArticles', articleID);
+            const article = await getDoc(articleRef);
+  
+            if (article.exists()) {
+              return article.data();
+            } else {
+              console.log(`Article with ID ${articleID} not found.`);
+              return null;
+            }
+          });
+  
+          Promise.all(mapID)
+            .then((articlesData) => {
+              setTechnologyArticles(articlesData.filter((article) => article !== null));
+            })
+            .catch((error) => {
+              console.error('Error retrieving saved articles:', error);
+            });
+        } catch (error) {
+          console.error('Error loading saved articles:', error);
+        }
+      };
+
+      loadTechnologyArticles();
+
     }, []);
 
     const currentUser = auth.currentUser;
