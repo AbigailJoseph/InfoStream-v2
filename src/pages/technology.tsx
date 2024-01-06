@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../style.css'
-import { addDoc, collection , arrayUnion, updateDoc, doc } from 'firebase/firestore';
+import { addDoc, collection , arrayUnion, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '../../server/firebase-config';
 import {auth} from '../../server/firebase-config';
 import 'bootstrap/dist/css/bootstrap-grid.min.css'
@@ -9,10 +9,12 @@ import Stack from 'react-bootstrap/Stack'
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import CONFIG from "../../server/consts";
 
 
 const Technology: React.FC = () => {
     const [technologyArticles, setTechnologyArticles] = useState<any[]>([]);
+    const [technologyArticleIDs, setTechnologyArticleIDs] = useState<any[]>([]);
     const [savedArticles, setSavedArticles] = useState<any[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
@@ -76,7 +78,7 @@ const Technology: React.FC = () => {
 
     return (
         <div className='backGround'>
-            <h2 className="mx-4">Technology Page</h2>
+            <h2 className="mx-4">Technology Articles</h2>
             <Stack gap={3}>
             {technologyArticles.map((article: any, index: number) => (
             <Card key = {index} className="mx-4">

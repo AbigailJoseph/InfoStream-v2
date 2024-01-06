@@ -108,7 +108,7 @@ const Business: React.FC = () => {
     
     return (
         <div className='backGround'>
-            <h2 className = "mx-4">Business Page</h2>
+            <h2 className = "mx-4">Business Articles</h2>
           <Stack gap={3}>
           {businessArticles.map((article: any, index: number) => (
            <Card key = {index} className="mx-4">

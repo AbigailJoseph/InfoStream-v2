@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../style.css'
-import { addDoc, collection , arrayUnion, updateDoc, doc } from 'firebase/firestore';
+import { addDoc, collection , arrayUnion, updateDoc, doc, getDoc} from 'firebase/firestore';
 import { db } from '../../server/firebase-config';
 import {auth} from '../../server/firebase-config';
 import 'bootstrap/dist/css/bootstrap-grid.min.css'
@@ -9,34 +9,67 @@ import Stack from 'react-bootstrap/Stack'
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import CONFIG from "../../server/consts";
 
 const Science: React.FC = () => {
     const [scienceArticles, setScienceArticles] = useState<any[]>([]);
+    const [scienceArticleIDs, setScienceArticleIDs] = useState<any[]>([]);
     const [savedArticles, setSavedArticles] = useState<any[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); 
 
     useEffect(() => {
-        const apiKey = 'fc86f65ced7b44e9b86c02e971b9bdfc'; 
+      const fetchScienceArticles = async () => {
+        try{
+          const articleIDRef = doc(db, `articleIDs`, CONFIG.ARTICLE_ID)
+          const snapshot = await getDoc(articleIDRef);
 
-        fetch(`https://newsapi.org/v2/top-headlines?category=science&country=us&apiKey=${apiKey}`)
-            .then(response => response.json())
-            .then(data => {
-                setScienceArticles(data.articles);
-            })
-            .catch(error => {
-                console.log('Error fetching science articles:', error);
-            });
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-          if (user) {
-              setIsLoggedIn(true);
+          if (snapshot.exists()) {
+            const articleIDs = snapshot.data();
+            const scienceArticlesArray = articleIDs.science || [];
+            setScienceArticleIDs(scienceArticlesArray);
           } else {
-              setIsLoggedIn(false);
+            console.log('Document not found.');
           }
-        });
+
+        }
+        catch(error){
+          console.error('Error fetching articleIDs document:', error);
+        }
+      };
+
+      fetchScienceArticles();
+
+    }, []);
+
+    useEffect(() => {
+      const loadScienceArticles = async () => {
+        try {
+          const mapID = scienceArticleIDs.map(async (articleID) => {
+            const articleRef = doc(db, 'scienceArticles', articleID);
+            const article = await getDoc(articleRef);
   
-        return () => {
-            unsubscribe(); // Cleanup
-        };
+            if (article.exists()) {
+              return article.data();
+            } else {
+              console.log(`Article with ID ${articleID} not found.`);
+              return null;
+            }
+          });
+  
+          Promise.all(mapID)
+            .then((articlesData) => {
+              setScienceArticles(articlesData.filter((article) => article !== null));
+            })
+            .catch((error) => {
+              console.error('Error retrieving saved articles:', error);
+            });
+        } catch (error) {
+          console.error('Error loading saved articles:', error);
+        }
+      };
+
+      loadScienceArticles();
+
     }, []);
 
     const currentUser = auth.currentUser;
@@ -75,7 +108,7 @@ const Science: React.FC = () => {
 
     return (
         <div className='backGround'>
-            <h2 className = "mx-4">Science Page</h2>
+            <h2 className = "mx-4">Science Articles</h2>
             <Stack gap={3}>
             {scienceArticles.map((article: any, index: number) => (
             <Card key = {index}  className="mx-4">

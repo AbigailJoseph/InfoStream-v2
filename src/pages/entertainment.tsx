@@ -110,7 +110,7 @@ const Entertainment: React.FC = () => {
 
     return (
         <div className='backGround'>
-            <h2 className = "mx-4">Entertainment Page</h2>
+            <h2 className = "mx-4">Entertainment Articles</h2>
             <Stack gap={3}>
             {entertainmentArticles.map((article: any, index: number) => (
             <Card key = {index} className="mx-4">
