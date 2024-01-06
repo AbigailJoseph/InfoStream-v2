@@ -39,7 +39,7 @@ const Business: React.FC = () => {
 
       fetchBusinessArticles();
 
-    })
+    }, []);
 
     useEffect(() => {
       const loadBusinessArticles = async () => {
@@ -70,7 +70,7 @@ const Business: React.FC = () => {
 
       loadBusinessArticles();
 
-    })
+    }, []);
 
     const currentUser = auth.currentUser;
     const currentUserId = currentUser?.uid;
