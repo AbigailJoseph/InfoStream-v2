@@ -17,29 +17,30 @@ const HomeScreen: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   
     
-    useEffect(() => {
-      const apiKey = 'fc86f65ced7b44e9b86c02e971b9bdfc'; 
-      fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`)
-        .then(response => response.json())
-        .then(data => {
-          setTopHeadlines(data.articles);
-        })
-        .catch(error => {
-          console.log('Error fetching top headlines:', error);
-        });
-      
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-          if (user) {
-              setIsLoggedIn(true);
-          } else {
-              setIsLoggedIn(false);
-          }
-      });
 
-      return () => {
-          unsubscribe();
-      };
-    }, []);
+    // useEffect(() => {
+    //   const apiKey = 'fc86f65ced7b44e9b86c02e971b9bdfc'; 
+    //   fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //       setTopHeadlines(data.articles);
+    //     })
+    //     .catch(error => {
+    //       console.log('Error fetching top headlines:', error);
+    //     });
+      
+    //     const unsubscribe = auth.onAuthStateChanged((user) => {
+    //       if (user) {
+    //           setIsLoggedIn(true);
+    //       } else {
+    //           setIsLoggedIn(false);
+    //       }
+    //   });
+
+    //   return () => {
+    //       unsubscribe();
+    //   };
+    // }, []);
   
     const currentUser = auth.currentUser;
     const currentUserId = currentUser?.uid;
