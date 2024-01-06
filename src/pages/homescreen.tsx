@@ -16,6 +16,7 @@ const HomeScreen: React.FC = () => {
     const [savedArticles, setSavedArticles] = useState<any[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   
+    
     useEffect(() => {
       const apiKey = 'fc86f65ced7b44e9b86c02e971b9bdfc'; 
       fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`)
@@ -49,26 +50,26 @@ const HomeScreen: React.FC = () => {
         return;
       };
       try {
-        const savedCollectionRef = collection(db, `savedArticles`);
-        const addSave = await addDoc(savedCollectionRef, {
+        const savedCollectionRef = collection(db, 'articles');
+        await addDoc(savedCollectionRef, {
           title: article.title,
           description: article.description,
           url: article.url,
         });
 
-        alert('Article'+ savedArticles + 'saved successfully!');
+        alert('Article '+ savedArticles + 'saved successfully!');
 
-        setSavedArticles(prevSavedArticles => [...prevSavedArticles, article]);
+        //setSavedArticles(prevSavedArticles => [...prevSavedArticles, article]);
           
-        const saveRef = doc(db, 'users', currentUserId!);
-          try {
-            await updateDoc(saveRef, {
-              savedArticlesArray: arrayUnion(addSave.id)
-            });
-            console.log('article now saved');
-          } catch (error) {
-            console.error('error updating', error);
-          }
+        // const saveRef = doc(db, 'users', currentUserId!);
+        //   try {
+        //     await updateDoc(saveRef, {
+        //       savedArticlesArray: arrayUnion(addSave.id)
+        //     });
+        //     console.log('article now saved');
+        //   } catch (error) {
+        //     console.error('error updating', error);
+        //   }
       } catch (error) {
         console.error('Error saving article:', error);
       }

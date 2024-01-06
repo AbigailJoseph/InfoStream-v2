@@ -49,7 +49,7 @@ const Technology: React.FC = () => {
         return;
       };
       try {
-        const savedCollectionRef = collection(db, `savedArticles`);
+        const savedCollectionRef = collection(db, `technologyArticles`);
         const addSave = await addDoc(savedCollectionRef, {
           title: article.title,
           description: article.description,
@@ -58,17 +58,17 @@ const Technology: React.FC = () => {
 
         alert('Article'+ savedArticles + 'saved successfully!');
 
-        setSavedArticles(prevSavedArticles => [...prevSavedArticles, article]);
+        // setSavedArticles(prevSavedArticles => [...prevSavedArticles, article]);
           
-        const saveRef = doc(db, 'users', currentUserId!);
-          try {
-            await updateDoc(saveRef, {
-              savedArticlesArray: arrayUnion(addSave.id)
-            });
-            console.log('article now saved');
-          } catch (error) {
-            console.error('error updating', error);
-          }
+        // const saveRef = doc(db, 'users', currentUserId!);
+        //   try {
+        //     await updateDoc(saveRef, {
+        //       savedArticlesArray: arrayUnion(addSave.id)
+        //     });
+        //     console.log('article now saved');
+        //   } catch (error) {
+        //     console.error('error updating', error);
+        //   }
       } catch (error) {
         console.error('Error saving article:', error);
       }
