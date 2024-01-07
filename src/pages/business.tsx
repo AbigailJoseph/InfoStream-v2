@@ -39,6 +39,8 @@ const Business: React.FC = () => {
 
       fetchBusinessArticles();
 
+      
+
     }, []);
 
     useEffect(() => {
@@ -69,41 +71,53 @@ const Business: React.FC = () => {
       };
 
       loadBusinessArticles();
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+            setIsLoggedIn(true);
+        } else {
+            setIsLoggedIn(false);
+        }
+    });
+    return () => {
+        unsubscribe();
+    };
 
     }, []);
 
     const currentUser = auth.currentUser;
     const currentUserId = currentUser?.uid;
 
-    const savePost = async (article: any) => {
+    const savePost = async (article: { title: any; description: any; url: any; }) => {
       if (!isLoggedIn) {
         alert('User is not logged in. Please log in to save articles.');
         return;
       };
       try {
-        const savedCollectionRef = collection(db, `businessArticles`);
+
+        const savedCollectionRef = collection(db, 'savedArticles');
         const addSave = await addDoc(savedCollectionRef, {
           title: article.title,
           description: article.description,
           url: article.url,
         });
 
-        alert('Article' + savedArticles +'saved successfully!');
-
-      //   setSavedArticles(prevSavedArticles => [...prevSavedArticles, article]);
+        //setSavedArticles(prevSavedArticles => [...prevSavedArticles, article]);
+       // console.log("article.id: " + article.id)
           
-      //   const saveRef = doc(db, 'users', currentUserId!);
-      //     try {
-      //       await updateDoc(saveRef, {
-      //         savedArticlesArray: arrayUnion(addSave.id)
-      //       });
-      //       console.log('article now saved');
-      //     } catch (error) {
-      //       console.error('error updating', error);
-      //     }
-       } catch (error) {
+        const saveRef = doc(db, 'users', currentUserId!);
+          try {
+            await updateDoc(saveRef, {
+              savedArticlesArray: arrayUnion(addSave.id)
+            });
+            console.log('article now saved');
+          } catch (error) {
+            console.error('error updating', error);
+         }
+         alert('Article '+ savedArticles + 'saved successfully!');
+
+      } catch (error) {
         console.error('Error saving article:', error);
-       }
+      }
     };
     
     return (
