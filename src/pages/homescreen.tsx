@@ -15,7 +15,7 @@ import CONFIG from "../../server/consts";
 const HomeScreen: React.FC = () => {
     const [topArticles, setTopArticles] = useState<any[]>([]);
     const [topArticleIDs, setTopArticleIDs] = useState<any[]>([]);
-    const [savedArticles, setSavedArticles] = useState<any[]>([]);
+    //const [savedArticles, setSavedArticles] = useState<any[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   
     useEffect(() => {
@@ -115,7 +115,7 @@ const HomeScreen: React.FC = () => {
           } catch (error) {
             console.error('error updating', error);
          }
-         alert('Article '+ savedArticles + 'saved successfully!');
+         alert('Article saved successfully!');
 
       } catch (error) {
         console.error('Error saving article:', error);

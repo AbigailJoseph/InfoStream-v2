@@ -14,7 +14,7 @@ import CONFIG from "../../server/consts";
 const Business: React.FC = () => {
     const [businessArticles, setBusinessArticles] = useState<any[]>([]);
     const [businessArticleIDs, setBusinessArticleIDs] = useState<any[]>([]);
-    const [savedArticles, setSavedArticles] = useState<any[]>([]);
+    //const [savedArticles, setSavedArticles] = useState<any[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
     useEffect(() => {
@@ -113,7 +113,7 @@ const Business: React.FC = () => {
           } catch (error) {
             console.error('error updating', error);
          }
-         alert('Article '+ savedArticles + 'saved successfully!');
+         alert('Article saved successfully!');
 
       } catch (error) {
         console.error('Error saving article:', error);
