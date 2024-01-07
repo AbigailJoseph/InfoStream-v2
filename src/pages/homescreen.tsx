@@ -20,6 +20,8 @@ const HomeScreen: React.FC = () => {
   
     useEffect(() => {
       const fetchTopArticles = async () => {
+
+      
         try{
           const articleIDRef = doc(db, `articleIDs`, CONFIG.ARTICLE_ID)
           const snapshot = await getDoc(articleIDRef);
@@ -32,19 +34,6 @@ const HomeScreen: React.FC = () => {
             console.log('Document not found.');
           }
 
-        }
-        catch(error){
-          console.error('Error fetching articleIDs document:', error);
-        }
-      };
-
-      fetchTopArticles();
-
-    }, []);
-
-    useEffect(() => {
-      const loadBusinessArticles = async () => {
-        try {
           const mapID = topArticleIDs.map(async (articleID) => {
             const articleRef = doc(db, 'articles', articleID);
             const article = await getDoc(articleRef);
@@ -64,17 +53,62 @@ const HomeScreen: React.FC = () => {
             .catch((error) => {
               console.error('Error retrieving saved articles:', error);
             });
-        } catch (error) {
-          console.error('Error loading saved articles:', error);
+
+        }
+        catch(error){
+          console.error('Error fetching articleIDs document:', error);
         }
       };
 
-      loadBusinessArticles();
+      fetchTopArticles();
+
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+            setIsLoggedIn(true);
+        } else {
+            setIsLoggedIn(false);
+        }
+    });
+    return () => {
+        unsubscribe();
+    };
 
     }, []);
+
+    // useEffect(() => {
+    //   const loadBusinessArticles = async () => {
+    //     try {
+    //       const mapID = topArticleIDs.map(async (articleID) => {
+    //         const articleRef = doc(db, 'articles', articleID);
+    //         const article = await getDoc(articleRef);
+  
+    //         if (article.exists()) {
+    //           return article.data();
+    //         } else {
+    //           console.log(`Article with ID ${articleID} not found.`);
+    //           return null;
+    //         }
+    //       });
+  
+    //       Promise.all(mapID)
+    //         .then((articlesData) => {
+    //           setTopArticles(articlesData.filter((article) => article !== null));
+    //         })
+    //         .catch((error) => {
+    //           console.error('Error retrieving saved articles:', error);
+    //         });
+    //     } catch (error) {
+    //       console.error('Error loading saved articles:', error);
+    //     }
+    //   };
+
+    //   loadBusinessArticles();
+
+    // }, []);
   
     const currentUser = auth.currentUser;
     const currentUserId = currentUser?.uid;
+    console.log('user id : ' + currentUserId)
 
     const savePost = async (article: { title: any; description: any; url: any; }) => {
       if (!isLoggedIn) {
@@ -82,26 +116,28 @@ const HomeScreen: React.FC = () => {
         return;
       };
       try {
-        const savedCollectionRef = collection(db, 'articles');
-        await addDoc(savedCollectionRef, {
+
+        const savedCollectionRef = collection(db, 'savedArticles');
+        const addSave = await addDoc(savedCollectionRef, {
           title: article.title,
           description: article.description,
           url: article.url,
         });
 
-        alert('Article '+ savedArticles + 'saved successfully!');
-
         //setSavedArticles(prevSavedArticles => [...prevSavedArticles, article]);
+       // console.log("article.id: " + article.id)
           
-        // const saveRef = doc(db, 'users', currentUserId!);
-        //   try {
-        //     await updateDoc(saveRef, {
-        //       savedArticlesArray: arrayUnion(addSave.id)
-        //     });
-        //     console.log('article now saved');
-        //   } catch (error) {
-        //     console.error('error updating', error);
-        //   }
+        const saveRef = doc(db, 'users', currentUserId!);
+          try {
+            await updateDoc(saveRef, {
+              savedArticlesArray: arrayUnion(addSave.id)
+            });
+            console.log('article now saved');
+          } catch (error) {
+            console.error('error updating', error);
+         }
+         alert('Article '+ savedArticles + 'saved successfully!');
+
       } catch (error) {
         console.error('Error saving article:', error);
       }
