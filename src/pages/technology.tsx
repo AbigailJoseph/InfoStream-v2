@@ -40,7 +40,7 @@ const Technology: React.FC = () => {
 
       fetchTechnologyArticles();
 
-    }, []);
+    }, [technologyArticleIDs]);
 
     useEffect(() => {
       const loadTechnologyArticles = async () => {
@@ -81,7 +81,7 @@ const Technology: React.FC = () => {
         unsubscribe();
     };
 
-    }, []);
+    }, [technologyArticles]);
 
     const currentUser = auth.currentUser;
     const currentUserId = currentUser?.uid;

@@ -39,7 +39,7 @@ const Science: React.FC = () => {
 
       fetchScienceArticles();
 
-    }, []);
+    }, [scienceArticleIDs]);
 
     useEffect(() => {
       const loadScienceArticles = async () => {
@@ -80,7 +80,7 @@ const Science: React.FC = () => {
         unsubscribe();
     };
 
-    }, []);
+    }, [scienceArticles]);
 
     const currentUser = auth.currentUser;
     const currentUserId = currentUser?.uid;

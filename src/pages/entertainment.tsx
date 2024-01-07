@@ -11,10 +11,10 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import CONFIG from "../../server/consts";
 
-const Entertainment: React.FC = () => {
+function Entertainment(){
     const [entertainmentArticles, setEntertainmentArticles] = useState<any[]>([]);
     const [entertainmentArticleIDs, setEntertainmentArticleIDs] = useState<any[]>([]);
-    const [savedArticles, setSavedArticles] = useState<any[]>([]);
+    //const [savedArticles, setSavedArticles] = useState<any[]>([]);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
 
@@ -40,7 +40,7 @@ const Entertainment: React.FC = () => {
 
       fetchEntertainmentArticles();
 
-    }, []);
+    }, [entertainmentArticleIDs]);
 
     useEffect(() => {
       const loadEntertainmentArticles = async () => {
@@ -82,7 +82,7 @@ const Entertainment: React.FC = () => {
         unsubscribe();
     };
 
-    }, []);
+    }, [entertainmentArticles]);
 
 
     const currentUser = auth.currentUser;
@@ -114,7 +114,7 @@ const Entertainment: React.FC = () => {
           } catch (error) {
             console.error('error updating', error);
          }
-         alert('Article '+ savedArticles + 'saved successfully!');
+         alert('Article saved successfully!');
 
       } catch (error) {
         console.error('Error saving article:', error);

@@ -41,7 +41,7 @@ const Business: React.FC = () => {
 
       
 
-    }, []);
+    }, [businessArticleIDs]);
 
     useEffect(() => {
       const loadBusinessArticles = async () => {
@@ -82,7 +82,7 @@ const Business: React.FC = () => {
         unsubscribe();
     };
 
-    }, []);
+    }, [businessArticles]);
 
     const currentUser = auth.currentUser;
     const currentUserId = currentUser?.uid;

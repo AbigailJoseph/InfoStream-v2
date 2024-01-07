@@ -21,7 +21,6 @@ const HomeScreen: React.FC = () => {
     useEffect(() => {
       const fetchTopArticles = async () => {
 
-      
         try{
           const articleIDRef = doc(db, `articleIDs`, CONFIG.ARTICLE_ID)
           const snapshot = await getDoc(articleIDRef);
@@ -34,6 +33,19 @@ const HomeScreen: React.FC = () => {
             console.log('Document not found.');
           }
 
+        }
+        catch(error){
+          console.error('Error fetching articleIDs document:', error);
+        }
+      };
+
+      fetchTopArticles();  
+
+    }, [topArticleIDs]);
+
+    useEffect(() => {
+      const loadBusinessArticles = async () => {
+        try {
           const mapID = topArticleIDs.map(async (articleID) => {
             const articleRef = doc(db, 'articles', articleID);
             const article = await getDoc(articleRef);
@@ -53,14 +65,12 @@ const HomeScreen: React.FC = () => {
             .catch((error) => {
               console.error('Error retrieving saved articles:', error);
             });
-
-        }
-        catch(error){
-          console.error('Error fetching articleIDs document:', error);
+        } catch (error) {
+          console.error('Error loading saved articles:', error);
         }
       };
 
-      fetchTopArticles();
+      loadBusinessArticles();
 
       const unsubscribe = auth.onAuthStateChanged((user) => {
         if (user) {
@@ -73,38 +83,7 @@ const HomeScreen: React.FC = () => {
         unsubscribe();
     };
 
-    }, []);
-
-    // useEffect(() => {
-    //   const loadBusinessArticles = async () => {
-    //     try {
-    //       const mapID = topArticleIDs.map(async (articleID) => {
-    //         const articleRef = doc(db, 'articles', articleID);
-    //         const article = await getDoc(articleRef);
-  
-    //         if (article.exists()) {
-    //           return article.data();
-    //         } else {
-    //           console.log(`Article with ID ${articleID} not found.`);
-    //           return null;
-    //         }
-    //       });
-  
-    //       Promise.all(mapID)
-    //         .then((articlesData) => {
-    //           setTopArticles(articlesData.filter((article) => article !== null));
-    //         })
-    //         .catch((error) => {
-    //           console.error('Error retrieving saved articles:', error);
-    //         });
-    //     } catch (error) {
-    //       console.error('Error loading saved articles:', error);
-    //     }
-    //   };
-
-    //   loadBusinessArticles();
-
-    // }, []);
+    }, [topArticles]);
   
     const currentUser = auth.currentUser;
     const currentUserId = currentUser?.uid;
